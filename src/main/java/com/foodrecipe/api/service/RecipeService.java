@@ -1,8 +1,6 @@
 package com.foodrecipe.api.service;
 
-import com.foodrecipe.api.entity.Ingredients;
-import com.foodrecipe.api.entity.Profile;
-import com.foodrecipe.api.entity.Recipe;
+import com.foodrecipe.api.entity.*;
 import com.foodrecipe.api.repository.IngredientsRepository;
 import com.foodrecipe.api.repository.ProfileRepository;
 import com.foodrecipe.api.repository.RecipeRepository;
@@ -25,28 +23,11 @@ public class RecipeService {
         return recipeRepository.findAllByProfile(profile);
     }
 
-    public Iterable<Recipe> getRecipeByCategory(String request){
-        String category = "";
-        switch(request.toLowerCase()){
-            case "entrees":
-                category = "ENTREES";
-                break;
-            case "main courses":
-                category = "MAIN_COURSES";
-                break;
-            case "sides":
-                category = "SIDES";
-                break;
-            case "drinks":
-                category = "DRINKS";
-                break;
-            case "desserts":
-                category = "DESSERTS";
-                break;
-            default:
-                return null;
+    public Iterable<Recipe> search(Profile profile, String keyword){
+        if(!keyword.equals(null) || !keyword.equals(" ") || !keyword.equals("")) {
+            return recipeRepository.search(profile.getUserId(), keyword);
         }
-        return recipeRepository.findAllByCategory(category);
+        return recipeRepository.findAllByProfile(profile);
     }
 
     public Recipe addRecipe(Recipe request){
@@ -69,6 +50,25 @@ public class RecipeService {
                 .description(request.getDescription())
                 .ingredients(ingredients)
                 .build();
+        switch(request.getCategory().toString().toLowerCase()){
+            case "entrees":
+                recipe.setCategory(Category.ENTREES);
+                break;
+            case "main courses":
+                recipe.setCategory(Category.MAIN_COURSES);
+                break;
+            case "sides":
+                recipe.setCategory(Category.SIDES);
+                break;
+            case "drinks":
+                recipe.setCategory(Category.DRINKS);
+                break;
+            case "desserts":
+                recipe.setCategory(Category.DESSERTS);
+                break;
+            default:
+                break;
+        }
         Recipe savedRecipe = recipeRepository.save(recipe);
         return savedRecipe;
     }

@@ -21,7 +21,7 @@ public class Ingredients {
             name="id",
             updatable = false
     )
-    private Integer id;
+    private Long id;
 
     @Column(
             name="name",

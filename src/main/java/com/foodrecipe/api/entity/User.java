@@ -25,7 +25,7 @@ public class User  implements UserDetails {
             name="id",
             updatable = false
     )
-    private Integer id;
+    private Long id;
 
     @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name="user_tbl_userId", referencedColumnName = "userId")

@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name="profile_tbl")
 public class Profile {
@@ -20,7 +20,7 @@ public class Profile {
             name="userId",
             updatable = false
     )
-    private Integer userId;
+    private Long userId;
 
     @Column(
             name="firstname",

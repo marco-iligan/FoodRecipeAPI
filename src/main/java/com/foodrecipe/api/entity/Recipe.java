@@ -22,7 +22,7 @@ public class Recipe {
             name="id",
             updatable = false
     )
-    private Integer Id;
+    private Long Id;
 
     @ManyToOne(fetch=FetchType.LAZY, optional = true)
     @JoinColumn(name="profile_tbl_userId", referencedColumnName = "userId")
@@ -44,7 +44,7 @@ public class Recipe {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name="recipe_ingredients_tbl",
     joinColumns = {
             @JoinColumn(name = "recipe_id", referencedColumnName = "id")

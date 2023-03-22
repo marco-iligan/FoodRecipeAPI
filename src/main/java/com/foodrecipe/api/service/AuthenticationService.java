@@ -15,6 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class AuthenticationService {
     @Autowired
@@ -29,21 +31,26 @@ public class AuthenticationService {
     private AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request){
-        Profile profile = Profile.builder()
-                .fName(request.getProfile().getFName())
-                .lName(request.getProfile().getLName())
-                .mName(request.getProfile().getMName())
-                .build();
-        Profile savedProfile = profileRepository.save(profile);
-        User user = User.builder()
-                .profile(savedProfile)
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .build();
-        User savedUser = userRepository.save(user);
-        var jwtToken = jwtService.generateToken(savedUser);
-        return new AuthenticationResponse(jwtToken);
+        try {
+            User flag = userRepository.findByUsername(request.getUsername()).orElseThrow();
+            return new AuthenticationResponse("Username already exists");
+        }catch (Exception e) {
+            Profile profile = Profile.builder()
+                    .fName(request.getProfile().getFName())
+                    .lName(request.getProfile().getLName())
+                    .mName(request.getProfile().getMName())
+                    .build();
+            Profile savedProfile = profileRepository.save(profile);
+            User user = User.builder()
+                    .profile(savedProfile)
+                    .username(request.getUsername())
+                    .password(passwordEncoder.encode(request.getPassword()))
+                    .role(Role.USER)
+                    .build();
+            User savedUser = userRepository.save(user);
+            var jwtToken = jwtService.generateToken(savedUser);
+            return new AuthenticationResponse(jwtToken);
+        }
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
