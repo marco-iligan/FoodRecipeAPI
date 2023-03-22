@@ -24,7 +24,7 @@ public class RecipeService {
     }
 
     public Iterable<Recipe> search(Profile profile, String keyword){
-        if(!keyword.equals(null) || !keyword.equals(" ") || !keyword.equals("")) {
+        if(!keyword.equals(null) && !keyword.equals(" ") && !keyword.equals("")) {
             return recipeRepository.search(profile.getUserId(), keyword);
         }
         return recipeRepository.findAllByProfile(profile);
