@@ -24,7 +24,7 @@ public class Recipe {
     )
     private Long Id;
 
-    @ManyToOne(fetch=FetchType.LAZY, optional = true)
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="profile_tbl_userId", referencedColumnName = "userId")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Profile profile;

@@ -4,15 +4,15 @@ import com.foodrecipe.api.auth.AuthenticationRequest;
 import com.foodrecipe.api.auth.AuthenticationResponse;
 import com.foodrecipe.api.auth.RegisterRequest;
 import com.foodrecipe.api.service.AuthenticationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(path="/api/v1/auth")
 public class AuthenticationController {
-    @Autowired
-    private AuthenticationService service;
+    private final AuthenticationService service;
 
     @PostMapping(path="/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){

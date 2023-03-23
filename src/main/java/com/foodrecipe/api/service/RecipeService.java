@@ -1,38 +1,76 @@
 package com.foodrecipe.api.service;
 
 import com.foodrecipe.api.entity.*;
+import com.foodrecipe.api.exception.ApiRequestException;
 import com.foodrecipe.api.repository.IngredientsRepository;
-import com.foodrecipe.api.repository.ProfileRepository;
 import com.foodrecipe.api.repository.RecipeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
 public class RecipeService {
-    @Autowired
-    private RecipeRepository recipeRepository;
-    @Autowired
-    private ProfileRepository profileRepository;
-    @Autowired
-    private IngredientsRepository ingredientsRepository;
+    private final RecipeRepository recipeRepository;
+    private final IngredientsRepository ingredientsRepository;
 
     public Iterable<Recipe> getAllRecipe(Profile profile){
         return recipeRepository.findAllByProfile(profile);
     }
 
     public Iterable<Recipe> search(Profile profile, String keyword){
-        if(!keyword.equals(null) && !keyword.equals(" ") && !keyword.equals("")) {
+        if(keyword != null && !keyword.equals(" ") && !keyword.equals("")) {
             return recipeRepository.search(profile.getUserId(), keyword);
         }
         return recipeRepository.findAllByProfile(profile);
     }
 
     public Recipe addRecipe(Recipe request){
+        Set<Ingredients> ingredients = addIngredients(request.getIngredients());
+        Recipe recipe = Recipe.builder()
+                .profile(request.getProfile())
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .category(request.getCategory())
+                .ingredients(ingredients)
+                .build();
+        return recipeRepository.save(recipe);
+    }
+
+    public Recipe updateRecipe(Recipe request){
+        Set<Ingredients> ingredients = addIngredients(request.getIngredients());
+        Recipe recipe = recipeRepository.findById(request.getId()).orElseThrow(
+                () -> new ApiRequestException("Recipe doesn't exists"));
+        recipe.setTitle(request.getTitle());
+        recipe.setDescription(request.getDescription());
+        recipe.setCategory(recipe.getCategory());
+        recipe.setIngredients(ingredients);
+
+        return  recipeRepository.save(recipe);
+    }
+
+    public Recipe getRecipe(Recipe request){
+        Recipe recipe = recipeRepository.findByProfileAndId(request.getProfile(), request.getId());
+        if(recipe == null){
+            throw new ApiRequestException("Unauthorized Access");
+        }
+        return recipe;
+    }
+
+    public String removeRecipe(Recipe request){
+        Recipe recipe = recipeRepository.findByProfileAndId(request.getProfile(), request.getId());
+        if(recipe != null){
+            recipeRepository.delete(recipe);
+            return recipe.getTitle()+" was removed";
+        }
+        throw new ApiRequestException("Unauthorized Access");
+    }
+
+    private Set<Ingredients> addIngredients(Set<Ingredients> request){
         Set<Ingredients> ingredients = new HashSet<>();
-        for(Ingredients ing:request.getIngredients()){
+        for(Ingredients ing:request){
             if(ing.getId()==null){
                 Ingredients ingredient = Ingredients.builder()
                         .name(ing.getName())
@@ -41,35 +79,13 @@ public class RecipeService {
                 Ingredients savedIngredient = ingredientsRepository.save(ingredient);
                 ingredients.add(savedIngredient);
             }else{
-                ingredients.add(ing);
+                try{
+                    ingredients.add(ingredientsRepository.findById(ing.getId()).orElseThrow());
+                }catch (Exception e){
+                    continue;
+                }
             }
         }
-        Recipe recipe = Recipe.builder()
-                .profile(request.getProfile())
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .ingredients(ingredients)
-                .build();
-        switch(request.getCategory().toString().toLowerCase()){
-            case "entrees":
-                recipe.setCategory(Category.ENTREES);
-                break;
-            case "main courses":
-                recipe.setCategory(Category.MAIN_COURSES);
-                break;
-            case "sides":
-                recipe.setCategory(Category.SIDES);
-                break;
-            case "drinks":
-                recipe.setCategory(Category.DRINKS);
-                break;
-            case "desserts":
-                recipe.setCategory(Category.DESSERTS);
-                break;
-            default:
-                break;
-        }
-        Recipe savedRecipe = recipeRepository.save(recipe);
-        return savedRecipe;
+        return ingredients;
     }
 }

@@ -1,26 +1,24 @@
 package com.foodrecipe.api.service;
 
 import com.foodrecipe.api.entity.Profile;
+import com.foodrecipe.api.exception.ApiRequestException;
 import com.foodrecipe.api.repository.ProfileRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ProfileService {
-    @Autowired
-    private ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
     public Profile updateProfile(Profile request){
-        Profile profile = profileRepository.findById(request.getUserId()).orElseThrow();
-        if(profile != null){
-            profile.setFName(request.getFName());
-            profile.setLName(request.getLName());
-            profile.setMName(request.getMName());
+        Profile profile = profileRepository.findById(request.getUserId()).orElseThrow(
+                () -> new ApiRequestException("Ingredient doesn't exists."));
+        profile.setFName(request.getFName());
+        profile.setLName(request.getLName());
+        profile.setMName(request.getMName());
 
-            profileRepository.save(profile);
-            return profile;
-        }
-        return profile;
+        return profileRepository.save(profile);
     }
 
 }

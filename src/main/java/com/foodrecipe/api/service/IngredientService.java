@@ -1,14 +1,16 @@
 package com.foodrecipe.api.service;
 
 import com.foodrecipe.api.entity.Ingredients;
+import com.foodrecipe.api.exception.ApiRequestException;
 import com.foodrecipe.api.repository.IngredientsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class IngredientService {
-    @Autowired
-    private IngredientsRepository ingredientsRepository;
+    private final IngredientsRepository ingredientsRepository;
 
     public String addIngredient(Ingredients request){
         Ingredients ingredient = Ingredients.builder()
@@ -20,15 +22,13 @@ public class IngredientService {
     }
 
     public String updateIngredient(Ingredients request){
-        Ingredients ingredient = ingredientsRepository.findById(request.getId()).orElseThrow();
-        if(ingredient!=null){
-            ingredient.setName(request.getName());
-            ingredient.setDescription(request.getDescription());
-            ingredientsRepository.save(ingredient);
+        Ingredients ingredient = ingredientsRepository.findById(request.getId()).orElseThrow(
+                () -> new ApiRequestException("Ingredient doesn't exists."));
+        ingredient.setName(request.getName());
+        ingredient.setDescription(request.getDescription());
+        ingredientsRepository.save(ingredient);
 
-            return ingredient.getName()+" was updated";
-        }
-        return "Ingredient doesn't exists";
+        return ingredient.getName()+" was updated";
     }
 
     public Iterable<Ingredients> getAllIngredients(){
@@ -36,13 +36,10 @@ public class IngredientService {
     }
 
     public String removeIngredient(Ingredients request){
-        Ingredients ingredient = ingredientsRepository.findById(request.getId()).orElseThrow();
-        if(ingredient!=null){
-            ingredientsRepository.delete(ingredient);
+        Ingredients ingredient = ingredientsRepository.findById(request.getId()).orElseThrow(
+                () -> new ApiRequestException("Ingredient doesn't exists."));
+        ingredientsRepository.delete(ingredient);
 
-            return ingredient.getName()+" was removed";
-        }
-
-        return "Ingredient doesn't exists";
+        return ingredient.getName()+" was removed";
     }
 }

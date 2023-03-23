@@ -7,34 +7,27 @@ import com.foodrecipe.api.config.JwtService;
 import com.foodrecipe.api.entity.Profile;
 import com.foodrecipe.api.entity.Role;
 import com.foodrecipe.api.entity.User;
+import com.foodrecipe.api.exception.ApiRequestException;
 import com.foodrecipe.api.repository.ProfileRepository;
 import com.foodrecipe.api.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProfileRepository profileRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request){
-        try {
-            User flag = userRepository.findByUsername(request.getUsername()).orElseThrow();
-            return new AuthenticationResponse("Username already exists");
-        }catch (Exception e) {
+        boolean flag = userRepository.existsByUsername(request.getUsername());
+        if(!flag){
             Profile profile = Profile.builder()
                     .fName(request.getProfile().getFName())
                     .lName(request.getProfile().getLName())
@@ -51,12 +44,17 @@ public class AuthenticationService {
             var jwtToken = jwtService.generateToken(savedUser);
             return new AuthenticationResponse(jwtToken);
         }
+        throw new ApiRequestException("Username already exists.");
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwtToken);
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+            User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+            var jwtToken = jwtService.generateToken(user);
+            return new AuthenticationResponse(jwtToken);
+        }catch (Exception e){
+            throw new ApiRequestException("Invalid username or password.");
+        }
     }
 }

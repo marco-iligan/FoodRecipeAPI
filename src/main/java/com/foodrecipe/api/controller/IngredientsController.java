@@ -2,14 +2,14 @@ package com.foodrecipe.api.controller;
 
 import com.foodrecipe.api.entity.Ingredients;
 import com.foodrecipe.api.service.IngredientService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(path="api/v1/ingredients")
 public class IngredientsController {
-    @Autowired
-    private IngredientService ingredientService;
+    private final IngredientService ingredientService;
 
     @GetMapping(path="/get-all")
     public @ResponseBody Iterable<Ingredients> getAllIngredients(){
