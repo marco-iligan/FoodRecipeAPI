@@ -1,6 +1,5 @@
 package com.foodrecipe.api.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +7,8 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Recipe {
@@ -20,6 +20,7 @@ public class Recipe {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_profile_id", referencedColumnName = "profile_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Profile profile;
 
     private String title;

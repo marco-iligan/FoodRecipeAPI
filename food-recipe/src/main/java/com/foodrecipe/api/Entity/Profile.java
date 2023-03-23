@@ -2,9 +2,6 @@ package com.foodrecipe.api.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.Hibernate;
-
-import java.util.Objects;
 
 @Entity
 @Getter
