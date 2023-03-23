@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/user/profile/recipe")
+@RequestMapping("/api/v1/recipe")
 public class RecipeController {
 
     @Autowired
@@ -40,13 +40,11 @@ public class RecipeController {
 
     @PutMapping("/update")
     public Recipe updateRecipe(@RequestBody Recipe recipe){
-        recipeService.getRecipeById(recipe.getRecipeId());
-        return recipeService.saveRecipe(recipe);
+        return recipeService.updateRecipe(recipe);
     }
 
     @DeleteMapping("/delete/{recipeId}")
     public void deleteRecipe(@PathVariable(value="recipeId") long recipeId){
-        recipeService.getRecipeById(recipeId);
         recipeService.deleteRecipe(recipeId);
     }
 }

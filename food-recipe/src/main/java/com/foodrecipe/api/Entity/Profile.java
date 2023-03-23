@@ -1,14 +1,14 @@
 package com.foodrecipe.api.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.Hibernate;
 
-import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Profile {
@@ -26,15 +26,4 @@ public class Profile {
 
     @Column(name = "last_name")
     private String lastName;
-
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
-    private List<Recipe> recipe;
-
-    public long getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(long profileId) {
-        this.profileId = profileId;
-    }
 }

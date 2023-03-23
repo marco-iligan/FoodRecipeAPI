@@ -11,26 +11,15 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/user/profile")
+@RequestMapping("/api/v1/profile")
 public class ProfileController {
 
     @Autowired
     private ProfileService profileService;
 
-    @GetMapping(value = "/all")
-    public List<Profile> getAllProfiles(){
-        return profileService.getAllProfiles();
-    }
-
-    @GetMapping(value = "/{profileId}")
-    public ResponseEntity<Profile> getProfileById(@PathVariable(value = "profileId") long profileId){
-        try{
-            Profile profile = profileService.getProfileById(profileId);
-            return new ResponseEntity<Profile>(profile, HttpStatus.OK);
-        } catch (NoSuchElementException e){
-            return new ResponseEntity<Profile>(HttpStatus.NOT_FOUND);
-        }
-
+    @PutMapping("/update")
+    public Profile updteProfile(@RequestBody Profile profile){
+        return profileService.updateProfile(profile);
     }
 
 }

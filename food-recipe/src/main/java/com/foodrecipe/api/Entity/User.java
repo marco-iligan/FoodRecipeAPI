@@ -10,7 +10,8 @@ import java.util.Collection;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,7 +23,7 @@ public class User implements UserDetails {
     private long userId;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "user_profile_id")
     private Profile profile;
 
     @NonNull

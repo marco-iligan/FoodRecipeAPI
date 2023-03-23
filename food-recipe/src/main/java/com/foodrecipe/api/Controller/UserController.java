@@ -17,16 +17,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/add")
-    public User addUser(@RequestBody User user){
-        return userService.saveUser(user);
-    }
-
-    @GetMapping(value = "/all")
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
-    }
-
     @GetMapping(value = "/{userId}")
     public ResponseEntity<User> getUser(@PathVariable(value = "userId")long userId){
         try{

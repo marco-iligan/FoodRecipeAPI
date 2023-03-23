@@ -6,8 +6,6 @@ import com.foodrecipe.api.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class UserService {
 
@@ -17,14 +15,6 @@ public class UserService {
     @Autowired
     private ProfileService profileService;
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
-
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
-    }
-
     public User getUserById(long userId){
         return userRepository.findById(userId).get();
     }
@@ -33,7 +23,7 @@ public class UserService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new Exceptions("User does not exist", new RuntimeException("Bad Request"))
         );
-        profileService.deleteById(user.getProfile().getProfileId());
+        profileService.deleteProfile(user.getProfile().getProfileId());
         userRepository.deleteById(userId);
     }
 }

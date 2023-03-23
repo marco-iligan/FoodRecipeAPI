@@ -1,9 +1,9 @@
 package com.foodrecipe.api.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class Recipe {
     private long recipeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id")
+    @JoinColumn(name = "recipe_profile_id", referencedColumnName = "profile_id")
     private Profile profile;
 
     private String title;

@@ -1,12 +1,10 @@
 package com.foodrecipe.api.Controller;
 
 import com.foodrecipe.api.Entity.Profile;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
