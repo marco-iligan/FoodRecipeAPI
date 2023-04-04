@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  mysqldb:
+    image: mysql
+    cap_add:
+      - SYS_NICE
+    restart: on-failure
+    env_file: ./.env
+    environment:
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+    ports:
+      - '${MYSQLDB_LOCAL_PORT}:${MYSQLDB_DOCKER_PORT}'
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+  app:
+    container_name: foodrecipeapi
+    depends_on:
+      - mysqldb
+#    image: foodrecipeapi
+#    build: .
+    build: .
+    restart: on-failure
+    env_file: ./.env
+    hostname: localhost
+    ports:
+      - '${SPRING_LOCAL_PORT}:${SPRING_DOCKER_PORT}'
+    volumes:
+      - .m2:/root/.m2
+    stdin_open: true
+    tty: true
+volumes:
+  db:
+    driver: local
